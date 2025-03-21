@@ -1,0 +1,83 @@
+---
+metadata:
+  name: spark
+  sampling_period: 1s
+
+make_datasets:
+  step_id: "unsupervised_app1_os_only_val=0.15_random"
+  data_manager:
+    setup:
+      value: unsupervised  # "unsupervised", "generalization" or "weakly"
+      eq__generalization:
+        test_prop: 0.4
+        generalization_min_window_size: 120
+    app_ids: "1"
+    trace_types: ""
+    label_as_unknown: os_only  # "none" or "os_only"
+    include_extended_effect: True
+    trace_removal_idx: 1  # removing "5_0_50000_38" and "6_0_50000_47"
+    data_pruning_idx: 0
+    val_prop:
+      value: 0.15
+      gt__0:
+        train_val_split:
+          value: random  # "time" or "random"
+          eq__random:
+            random_split_seed: 0
+            # at least 10 windows for the largest window size.
+            random_min_window_size: 309
+
+build_features:
+  step_id: "custom_no_os_regular_scaling"
+  feature_crafter:
+    bundle_idx: 8  # -1 for no alteration
+  data_sampling_period: 1s
+  labels_sampling_period: 1s
+  data_downsampling_position: last
+  transform_fit_normal_only: "no"
+  transform_chain:
+    value: regular_scaling
+    contains__regular_scaling:
+      regular_scaling:
+        type_:
+          value: std
+          eq__minmax:
+            minmax_range: [0, 1]
+        model_training: all_training  # "all_training" or "largest_training"
+    contains__trace_:  # "trace_scaling" or "trace_head_scaling"
+      trace_scaling:
+        type_:
+          value: std
+          eq__minmax:
+            minmax_range: [0, 1]
+    contains__head_scaling:
+      head_scaling:
+        type_:
+          value: std
+          eq__minmax:
+            minmax_range: [0, 1]
+        head_size: 600
+        regular_pretraining_weight: 0.0
+    contains__head_online_scaling:
+      head_online_scaling:
+        type_:
+          value: std
+          eq__minmax:
+            minmax_range: [0, 1]
+        head_size: 1800
+        regular_pretraining_weight: 0.0
+        online_window_type: "expanding"
+    contains__pca:
+      pca:
+        n_components: 15
+        kernel: linear
+        model_training: all_training
+    contains__fa:
+      fa:
+        n_components: 15
+        model_training: all_training
+    contains__hidr:
+      hidr:
+        correlations_training: largest_training
+        autoencoders_training: trace
+...

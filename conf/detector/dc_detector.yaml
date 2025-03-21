@@ -1,0 +1,40 @@
+---
+name: dc_detector
+make_window_datasets:
+  step_id: "w=9"
+  window_manager:
+    window_size: 9
+    window_step: 1
+    n_periods: -1
+    normal_data_prop:
+      value: 1.0
+      lt__1.0:
+        normal_sampling_seed: 0
+    window_min_ano_coverage: 0.0
+    window_weak_ano_policy: drop
+    class_balancing:
+      value: none  # *choice* "naive_ano" only if multiple ano classes
+      ne__none:
+        class_balancing_seed: 0
+    dropped_anomaly_types: "7"
+
+train_window_model:
+  step_id: dc_detector
+  n_encoder_layers: 2
+  n_attention_heads: 1
+  patch_sizes: "1 3"
+  d_model: 256
+  dropout: 0.0
+  optimizer:
+    value: adamw
+    eq__adamw:
+      adamw_weight_decay: 0.0
+  learning_rate: 3e-4
+  batch_size: 128
+  n_epochs: 20
+  early_stopping_target: val_loss
+  early_stopping_patience: 20
+
+train_window_scorer:
+  temperature: 10.0
+...

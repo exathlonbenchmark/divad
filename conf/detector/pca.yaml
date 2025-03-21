@@ -1,0 +1,28 @@
+---
+name: pca
+make_window_datasets:
+  step_id: "w=1"
+  window_manager:
+    window_size: 1
+    window_step: 1
+    n_periods: -1
+    normal_data_prop:
+      value: 1.0
+      lt__1.0:
+        normal_sampling_seed: 0
+    window_min_ano_coverage: 0.2
+    window_weak_ano_policy: drop
+    class_balancing:
+      value: none  # *choice* "naive_ano" only if multiple ano classes
+      ne__none:
+        class_balancing_seed: 0
+    dropped_anomaly_types: "7"
+
+train_window_model:
+  step_id: "pca"  # always keep all components
+
+train_window_scorer:
+  step_id: "reconstruction"
+  method: reconstruction  # "reconstruction" or "mahalanobis"
+  n_selected_components: -1  # axes with largest or smallest variance depending on `method` (-1 for all)
+...

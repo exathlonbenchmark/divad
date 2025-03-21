@@ -1,0 +1,62 @@
+---
+name: autoencoder
+make_window_datasets:
+  step_id: "w=1"
+  window_manager:
+    window_size: 1
+    window_step: 1
+    downsampling_size: 1
+    downsampling_step: 1
+    downsampling_func: mean
+    n_periods: -1
+    normal_data_prop:
+      value: 1.0
+      lt__1.0:
+        normal_sampling_seed: 0
+    window_min_ano_coverage: 0.0
+    window_weak_ano_policy: drop
+    class_balancing:
+      value: none  # *choice* "naive_ano" only if multiple ano classes
+      ne__none:
+        class_balancing_seed: 0
+    dropped_anomaly_types: "7"
+
+train_window_model:
+  step_id: dense_ae_32
+  latent_dim: 32
+  type_: dense
+  enc_conv1d_filters: ""
+  enc_conv1d_kernel_sizes: ""
+  enc_conv1d_strides: ""
+  conv1d_pooling: True
+  conv1d_batch_norm: True
+  enc_n_hidden_neurons: ""
+  dec_last_activation: linear
+  input_dropout: 0.0
+  hidden_dropout: 0.0
+  dense_layers_activation: relu
+  linear_latent_activation: False
+  rec_unit_type: gru
+  activation_rec: tanh
+  rec_dropout: 0.0
+  rec_latent_type: rec
+  conv_add_dense_for_latent: False
+  loss: mse
+  optimizer:
+    value: adamw
+    eq__adamw:
+      adamw_weight_decay: 0.0
+  learning_rate: 3e-4
+  lr_scheduling: none  # either "none", "pw_constant" or "one_cycle"
+  lrs_pwc_red_factor: 2
+  lrs_pwc_red_freq: 10
+  lrs_oc_start_lr: 1e-4
+  lrs_oc_max_lr: 1e-3
+  lrs_oc_min_mom: 0.85
+  lrs_oc_max_mom: 0.95
+  n_epochs: 5000
+  early_stopping_target: val_loss
+  early_stopping_patience: 20
+  batch_size: 32
+  shuffling_buffer_prop: 1.0
+...

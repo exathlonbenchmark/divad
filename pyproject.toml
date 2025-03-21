@@ -1,0 +1,82 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "exathlon"
+version = "1.0.0"
+authors = [
+    {name = "Vincent Jacob", email = "vincent.jacob@inria.fr"},
+]
+description = "An integrated pipeline for explainable anomaly detection"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "Apache License 2.0"}
+dependencies = [
+    "python-dotenv",
+    "hydra-core",
+    "inputimeout",
+    "numpy==1.26.4",
+    "scipy",
+    "pandas",
+    "scikit-learn",
+    "xgboost",
+    "imbalanced-learn",
+    "tensorflow==2.14.0",
+    "tensorflow-probability==0.22.1",
+    # deepod repo (package lacks some methods)
+    "deepod@git+https://github.com/xuhongzuo/DeepOD",  # torch>=1.10.0,<1.13.1
+    "keras-tuner==1.4.7",
+    "torch==1.13.1",
+    "Markdown==3.3.4",  # tensorboard compatibility
+    "importlib-metadata<5.0",  # tensorboard compatibility
+    "matplotlib",
+    "tqdm",
+    "mlxtend",
+    "lime",
+    "dill"  # needed to save LIME objects
+]
+
+[project.optional-dependencies]
+dev = [
+    "black[jupyter]",
+    "pytest"
+]
+docs = [
+    "sphinx",
+    "sphinx-autobuild",
+    "myst-parser",
+    "furo",
+    "nbsphinx"
+]
+notebooks = [
+    "ipykernel",
+    "ipywidgets",  # for IProgress
+    "watermark",
+    "PyQt5",
+    "statsmodels",
+    "seaborn",
+    "joypy",
+    "umap-learn",
+    "datashader",
+    "bokeh",
+    "holoviews",
+    "colorcet",
+    "scikit-image",
+]
+profiling = [
+    "memory_profiler",
+    "tensorboard-plugin-profile"
+]
+all = [
+    "exathlon[dev]",
+    "exathlon[docs]",
+    "exathlon[profiling]",
+    "exathlon[notebooks]"
+]
+
+[tool.setuptools.packages.find]
+where = ["exathlon"]
+
+[project.scripts]
+exathlon = "run:main"

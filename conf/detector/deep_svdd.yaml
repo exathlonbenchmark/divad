@@ -1,0 +1,60 @@
+---
+name: deep_svdd
+make_window_datasets:
+  step_id: "w=1"
+  window_manager:
+    window_size: 1
+    window_step: 1
+    n_periods: -1
+    normal_data_prop:
+      value: 1.0
+      lt__1.0:
+        normal_sampling_seed: 0
+    window_min_ano_coverage: 0.2
+    window_weak_ano_policy: drop
+    class_balancing:
+      value: none  # *choice* "naive_ano" only if multiple ano classes
+      ne__none:
+        class_balancing_seed: 0
+    dropped_anomaly_types: "7"
+
+train_window_model:
+  step_id: deep_svdd_12_8
+  type_:
+    value: dense
+    eq__rec:
+      rec_unit_type: gru
+      rec_dropout: 0.0
+    eq__dense:
+      dense_hidden_activations: relu
+  conv1d_strides: ""
+  n_hidden_neurons: "12"
+  output_dim: 8
+  output_activation: linear
+  batch_normalization: False
+  input_dropout: 0.0
+  hidden_dropout: 0.0
+  loss:
+    value: one_class  # "one_class" or "soft_boundary" (only "one_class" supported for now).
+    eq__soft_boundary:
+      nu: 0.01
+  optimizer:
+    value: adamw
+    eq__adamw:
+      adamw_weight_decay: 0.01
+  learning_rate: 3e-4
+  lr_scheduling: none  # either "none", "pw_constant" or "one_cycle"
+  lrs_pwc_red_factor: 2
+  lrs_pwc_red_freq: 10
+  lrs_oc_start_lr: 1e-4
+  lrs_oc_max_lr: 1e-3
+  lrs_oc_min_mom: 0.85
+  lrs_oc_max_mom: 0.95
+  n_epochs: 5000
+  early_stopping_target: val_loss
+  early_stopping_patience: 20
+  batch_size: 32
+  shuffling_buffer_prop: 1.0
+  c_epsilon: 0.01
+  random_seed: 0  # reproducibility (e.g., of hypersphere centroid)
+...

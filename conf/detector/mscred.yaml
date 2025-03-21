@@ -1,0 +1,39 @@
+---
+name: mscred
+make_window_datasets:
+  step_id: "w=1"
+  window_manager:
+    window_size: 1
+    window_step: 1
+    downsampling_size: 1
+    downsampling_step: 1
+    downsampling_func: mean
+    n_periods: -1
+    normal_data_prop:
+      value: 1.0
+      lt__1.0:
+        normal_sampling_seed: 0
+    window_min_ano_coverage: 0.0
+    window_weak_ano_policy: drop
+    class_balancing:
+      value: none  # *choice* "naive_ano" only if multiple ano classes
+      ne__none:
+        class_balancing_seed: 0
+    dropped_anomaly_types: "7"
+
+train_window_model:
+  step_id: mscred
+  signature_lengths: "10 5"
+  filters: "32 64 128 256"
+  kernel_sizes: "3 2 2 2"
+  strides: "1 2 2 2"
+  optimizer:
+    value: adamw
+    eq__adamw:
+      adamw_weight_decay: 0.01
+  learning_rate: 3e-4
+  batch_size: 32
+  n_epochs: 20
+  early_stopping_target: val_loss
+  early_stopping_patience: 20
+...

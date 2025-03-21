@@ -1,0 +1,110 @@
+---
+name: divad
+make_window_datasets:
+  step_id: "w=1"
+  window_manager:
+    window_size: 1
+    window_step: 1
+    n_periods: -1
+    normal_data_prop:
+      value: 1.0
+      lt__1.0:
+        normal_sampling_seed: 0
+    window_min_ano_coverage: 0.0
+    window_weak_ano_policy: drop
+    class_balancing:
+      value: none  # *choice* "naive_ano" only if multiple ano classes
+      ne__none:
+        class_balancing_seed: 0
+    dropped_anomaly_types: "7"
+
+train_window_model:
+  step_id: divad_200_16
+  domain_key: "app-settings-rate"
+  type_:
+    value: "dense"
+    eq__rec:
+      rec_unit_type: "lstm"
+      activation_rec: "tanh"
+      rec_weight_decay: 0.0
+      conv1d_pooling: True
+      conv1d_batch_norm: True
+  pzy_dist:
+    value: standard
+    ne__standard:
+      pzy_kl_n_samples: 1
+    eq__gm:
+      pzy_gm_n_components: 16
+      pzy_gm_softplus_scale: 1.0
+    eq__vamp:
+      pzy_vamp_n_components: 16
+  qz_x_conv1d_filters: ""
+  qz_x_conv1d_kernel_sizes: ""
+  qz_x_conv1d_strides: ""
+  qz_x_n_hidden: "200"
+  pzd_d_n_hidden: "200"
+  px_z_conv1d_filters: ""
+  px_z_conv1d_kernel_sizes: ""
+  px_z_conv1d_strides: ""
+  px_z_n_hidden: "200"
+  latent_dim: 16
+  dec_output_dist: normal  # bernoulli or normal
+  time_freq:
+    value: True
+    eq__True:
+      sample_normalize_x: True  # better if True when `apply_hann` is True.
+      sample_normalize_mag: False
+      apply_hann: True
+      n_freq_modes: -1
+      phase_encoding: raw
+      phase_cyclical_decoding: False
+      qz_x_freq_conv1d_filters: "32 32"
+      qz_x_freq_conv1d_kernel_sizes: "5 5"
+      qz_x_freq_conv1d_strides: "2 2"
+      px_z_freq_conv1d_filters: "32"  # does not account for last (might be further split into mag and phase).
+      px_z_freq_conv1d_kernel_sizes: "5 5"  # accounts for last: same value for mag and phase.
+      px_z_freq_conv1d_strides: "2 2"  # accounts for last: same value for mag and phase.
+  softplus_shift: 1e-4
+  softplus_scale: 1.0
+  weight_decay: 0.0
+  dropout: 0.0
+  min_beta: 0.0
+  max_beta: 1.0
+  beta_n_epochs: 100
+  loss_weighting:
+    value: "fixed"
+    eq__fixed:
+      d_classifier_weight: 100000
+  optimizer:
+    value: adamw
+    eq__adamw:
+      adamw_weight_decay: 0.0
+  learning_rate: 3e-4
+  grad_norm_limit: 10.0
+  lr_scheduling: none  # either "none", "pw_constant" or "one_cycle"
+  lrs_pwc_red_factor: 2
+  lrs_pwc_red_freq: 10
+  lrs_oc_start_lr: 1e-4
+  lrs_oc_max_lr: 1e-3
+  lrs_oc_min_mom: 0.85
+  lrs_oc_max_mom: 0.95
+  n_epochs: 300
+  early_stopping_target: val_loss
+  early_stopping_patience: 20
+  batch_size: 128
+
+train_window_scorer:
+  scoring_method:
+    # "prior_nll_of_mean", "agg_post_nll_of_mean", "prior_mean_nll" or "agg_post_mean_nll"
+    value: prior_nll_of_mean
+    contains__mean_nll:
+      mean_nll_n_samples: 1024
+      mean_nll_seed: 0
+    contains__agg_post:
+      fit_val: True
+      agg_post_dist:
+        value: normal
+        eq__gm:
+          agg_post_gm_n_components: 32
+          agg_post_gm_seed: 0
+...

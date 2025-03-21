@@ -1,0 +1,35 @@
+---
+name: tranad
+make_window_datasets:
+  step_id: "w=10"
+  window_manager:
+    window_size: 9
+    window_step: 1
+    n_periods: -1
+    normal_data_prop:
+      value: 1.0
+      lt__1.0:
+        normal_sampling_seed: 0
+    window_min_ano_coverage: 0.2
+    window_weak_ano_policy: drop
+    class_balancing:
+      value: none  # *choice* "naive_ano" only if multiple ano classes
+      ne__none:
+        class_balancing_seed: 0
+    dropped_anomaly_types: "7"
+
+train_window_model:
+  step_id: tranad
+  dim_feedforward: 64
+  last_activation: sigmoid
+  optimizer:
+    value: adamw
+    eq__adamw:
+      # value used in the paper
+      adamw_weight_decay: 1e-5
+  learning_rate: 3e-4
+  batch_size: 128
+  n_epochs: 20
+  early_stopping_target: val_loss
+  early_stopping_patience: 20
+...

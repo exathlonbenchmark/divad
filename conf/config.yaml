@@ -1,0 +1,169 @@
+---
+defaults:
+  - _self_
+  - dataset: &dataset_name spark
+  - detector: autoencoder
+  - explainer: macrobase
+  - override hydra/hydra_logging: disabled
+  - override hydra/job_logging: disabled
+
+step: evaluate_online_scorer
+
+hydra:
+  run:
+    dir: ${outputs_root:}  # root path of pipeline outputs
+  output_subdir: null  # do not save full config everytime
+  sweep:
+    dir: ${hydra.run.dir}
+    subdir: ${hydra.run.dir}
+  job:
+    chdir: True
+  verbose: False
+
+dataset:
+  metadata:
+    name: ???
+    sampling_period: na
+  make_datasets:
+    #! use quotes around step ids if all integers
+    step_id: ""
+  build_features:
+    step_id: ""
+    feature_crafter:
+      bundle_idx: -1
+    data_sampling_period:
+      value: na
+      ne__na:  # TODO: should only be here if data_sampling_period != labels_sampling_period.
+        data_downsampling_position: last
+    labels_sampling_period: na
+detector:
+  name: ???
+  make_window_datasets:
+    step_id: ""
+    window_manager:
+      window_size: 1
+      window_step: 1
+      downsampling_size: 1
+      downsampling_step: 1
+      downsampling_func: mean
+      n_periods: -1
+      normal_data_prop:
+        value: 1.0
+        lt__1.0:
+          normal_sampling_seed: 0
+      window_min_ano_coverage: 0.2
+      window_weak_ano_policy: drop
+      class_balancing:
+        value: none  # *choice* "naive_ano" only if multiple ano classes
+        ne__none:
+          class_balancing_seed: 0
+      dropped_anomaly_types: "7"
+      dataset_name:
+        value: *dataset_name
+        eq__spark:
+          # "none", "app", "rate", "type-rate", "settings-rate", "app-type-rate", "app-settings-rate",
+          # "app_file", "app_rate" or "app_rate_file".
+          # > A dash means "at once", underscore means "and then with left, balance right"
+          # TODO: rename to window_balancing and window_balancing_seed, and make only the choices
+          #  depend on the dataset.
+          spark_balancing: app-settings-rate
+          spark_balancing_seed: 0
+        eq__asd:
+          # "none" or "file_name"
+          asd_balancing: none
+          asd_balancing_seed: 0
+      anomaly_augmentation:
+        value: none  # "none", "smote", "borderline_smote", "svm_smote" or "adasyn"
+        ne__none:
+          ano_augment_n_per_normal: 500
+          ano_augment_seed: 0
+  train_window_model:
+    step_id: ""
+  train_window_scorer:
+    step_id: ""
+  train_online_scorer:
+    step_id: "beta=0.9867"
+    scores_avg_beta: 0.9867
+  evaluate_online_scorer:
+    step_id: "test_point"
+    test_data: test
+    evaluator:
+      f_score_beta: 1.0
+      ignored_anomaly_labels: "7"
+      ignored_delayed_window: 0
+      evaluation_type:
+        value: "point"
+        ne__point:
+          n_thresholds: 5000
+        eq__range:
+          recall_alpha: 0.0
+          recall_omega: default
+          recall_delta: flat
+          recall_gamma: dup
+          precision_omega: default
+          precision_delta: flat
+          precision_gamma: dup
+  train_online_detector:
+    step_id: "val_point_mixed_f1"
+    threshold_selection:
+      value: supervised
+      eq__supervised:  # maximizing F-score on the validation set
+        scorer_evaluator_cfg:
+          f_score_beta: 1.0
+          evaluation_type:
+            value: "point"
+            ne__point:
+              n_thresholds: 5000
+            eq__range:
+              recall_alpha: 0.0
+              recall_omega: default
+              recall_delta: flat
+              recall_gamma: dup
+              precision_omega: default
+              precision_delta: flat
+              precision_gamma: dup
+        maximized_f_score: mixed  # "mixed" or "balanced" across anomaly types
+  evaluate_online_detector:
+    step_id: "test_point"
+    test_data: test
+    evaluator:
+      f_score_beta: 1.0
+      ignored_anomaly_labels: "7"
+      ignored_delayed_window: 0
+      evaluation_type:
+        value: "point"
+        ne__point:
+          n_thresholds: 5000
+        eq__range:
+          recall_alpha: 0.0
+          recall_omega: default
+          recall_delta: flat
+          recall_gamma: dup
+          precision_omega: default
+          precision_delta: flat
+          precision_gamma: dup
+
+explainer:
+  train_explainer:
+    step_id: ""
+  evaluate_explainer:
+    step_id: "test_gt_5"
+    test_data: test
+    # TODO: add "true_model_preds" choice: intersection between ground-truth and positive predictions.
+    explained_anomalies: ground_truth  # "ground_truth" or "model_preds"
+    evaluator:
+      min_anomaly_length: 1
+      ed1_instability_n_perturbations: 5
+    data_explainer_evaluator:
+      min_normal_length: 1
+      ed1_instability_sampled_prop: 0.8
+      ed1_accuracy_n_splits: 5
+      ed1_accuracy_test_prop: 0.2
+      random_seed: 0
+    model_explainer_evaluator:
+      small_anomalies_expansion: before  # "none", "before", "after" or "both"
+      large_anomalies_coverage:
+        value: all  # "all", "center" or "end"
+        eq__all:
+          random_seed: 0
+...

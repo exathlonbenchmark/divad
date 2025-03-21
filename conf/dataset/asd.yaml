@@ -1,0 +1,66 @@
+---
+metadata:
+  name: asd
+  sampling_period: 5min
+
+make_datasets:
+  step_id: ""
+  data_manager:
+    app_ids: ""  # empty for all
+    test_app_ids: "1"
+    val_prop: 0.15
+
+build_features:
+  step_id: "regular_scaling"
+  feature_crafter:
+    bundle_idx: -1  # -1 for no alteration
+  data_sampling_period: 5min
+  labels_sampling_period: 5min
+  data_downsampling_position: last
+  transform_fit_normal_only: "yes"
+  transform_chain:
+    value: regular_scaling
+    contains__regular_scaling:
+      regular_scaling:
+        type_:
+          value: std
+          eq__minmax:
+            minmax_range: [0, 1]
+        model_training: all_training  # "all_training" or "largest_training"
+    contains__trace_:  # "trace_scaling" or "trace_head_scaling"
+      trace_scaling:
+        type_:
+          value: std
+          eq__minmax:
+            minmax_range: [0, 1]
+    contains__head_scaling:
+      head_scaling:
+        type_:
+          value: std
+          eq__minmax:
+            minmax_range: [0, 1]
+        head_size: 600
+        regular_pretraining_weight: 0.0
+    contains__head_online_scaling:
+      head_online_scaling:
+        type_:
+          value: std
+          eq__minmax:
+            minmax_range: [0, 1]
+        head_size: 1800
+        regular_pretraining_weight: 0.0
+        online_window_type: "expanding"
+    contains__pca:
+      pca:
+        n_components: 15
+        kernel: linear
+        model_training: all_training
+    contains__fa:
+      fa:
+        n_components: 15
+        model_training: all_training
+    contains__hidr:
+      hidr:
+        correlations_training: largest_training
+        autoencoders_training: trace
+...

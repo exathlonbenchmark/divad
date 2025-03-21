@@ -1,0 +1,8 @@
+---
+name: macrobase
+train_explainer:
+  step_id: "macrobase_10_0.4_1.5"
+  n_bins: 10
+  min_support: 0.4
+  min_risk_ratio: 1.5
+...

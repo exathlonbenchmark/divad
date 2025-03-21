@@ -1,0 +1,63 @@
+---
+name: deep_sad
+make_window_datasets:
+  step_id: "normal=0.1_w=1"
+  window_manager:
+    window_size: 1
+    window_step: 1
+    n_periods: -1
+    normal_data_prop:
+      value: 1.0
+      lt__1.0:
+        normal_sampling_seed: 0
+    window_min_ano_coverage: 0.0
+    window_weak_ano_policy: drop
+    class_balancing:
+      value: none  # *choice* "naive_ano" only if multiple ano classes
+      ne__none:
+        class_balancing_seed: 0
+    dropped_anomaly_types: "7"
+    anomaly_augmentation:
+      value: none  # "none", "smote", "borderline_smote", "svm_smote" or "adasyn"
+      ne__none:
+        ano_augment_n_per_normal: 500
+        ano_augment_seed: 0
+
+train_window_model:
+  step_id: deep_sad
+  normal_as_unlabeled: True
+  remove_anomalies: False
+  oversample_anomalies:
+    value: True
+    eq__True:
+      n_ano_per_normal: 1.0
+  network:
+    value: mlp
+    eq__rec:
+      enc_conv1d_filters: ""
+      enc_conv1d_kernel_sizes: ""
+      enc_conv1d_strides: ""
+      conv1d_batch_norm: True
+  hidden_dims: "200"
+  rep_dim: 16
+  eta: 1.0
+  ae_out_act: linear
+  pretrain_optimizer: adamw
+  pretrain_adamw_weight_decay: 1e-6
+  pretrain_learning_rate: 1e-4
+  pretrain_lr_milestones: "50"
+  pretrain_batch_size: 200  # TODO: either remove, as actually not used, or use separate loaders.
+  pretrain_n_epochs: 150
+  pretrain_early_stopping_target: val_loss
+  pretrain_early_stopping_patience: 100
+  optimizer: adamw
+  adamw_weight_decay: 1e-6
+  learning_rate: 1e-4
+  lr_milestones: "50"
+  batch_size: 200
+  n_epochs: 150
+  early_stopping_target: val_loss
+  early_stopping_patience: 100
+  random_state: 0
+  fix_weights_init: True
+...

@@ -1,0 +1,29 @@
+---
+name: iforest
+make_window_datasets:
+  step_id: "w=1"
+  window_manager:
+    window_size: 1
+    window_step: 1
+    n_periods: -1
+    normal_data_prop:
+      value: 1.0
+      lt__1.0:
+        normal_sampling_seed: 0
+    window_min_ano_coverage: 0.2
+    window_weak_ano_policy: drop
+    class_balancing:
+      value: none  # *choice* "naive_ano" only if multiple ano classes
+      ne__none:
+        class_balancing_seed: 0
+    dropped_anomaly_types: "7"
+
+train_window_scorer:
+  step_id: "iforest_100_256_1.0"
+  drop_anomalies: False
+  n_estimators: 100
+  max_samples: 256
+  max_features: 1.0
+  contamination: auto
+  random_state: 0
+...

@@ -1,0 +1,55 @@
+---
+name: lstm_ad
+make_window_datasets:
+  step_id: "w=60"
+  window_manager:
+    window_size: 60  # 40 as actual window + 20 forward
+    window_step: 1
+    n_periods: -1
+    normal_data_prop:
+      value: 1.0
+      lt__1.0:
+        normal_sampling_seed: 0
+    window_min_ano_coverage: 0.0
+    window_weak_ano_policy: drop
+    class_balancing:
+      value: none  # *choice* "naive_ano" only if multiple ano classes
+      ne__none:
+        class_balancing_seed: 0
+    dropped_anomaly_types: "7"
+
+train_window_model:
+  step_id: "lstm_10-10_20"
+  n_forward: 20
+  conv1d_filters: ""
+  conv1d_kernel_sizes: ""
+  conv1d_strides: ""
+  conv1d_pooling: True
+  conv1d_batch_norm: True
+  unit_type: lstm
+  n_hidden_neurons: "10 10"
+  dropout: 0.0
+  rec_dropout: 0.0
+  optimizer:
+    value: adamw
+    eq__adamw:
+      adamw_weight_decay: 0.0
+  learning_rate: 3e-4
+  lr_scheduling: none  # either "none", "pw_constant" or "one_cycle"
+  lrs_pwc_red_factor: 2
+  lrs_pwc_red_freq: 10
+  lrs_oc_start_lr: 1e-4
+  lrs_oc_max_lr: 1e-3
+  lrs_oc_min_mom: 0.85
+  lrs_oc_max_mom: 0.95
+  n_epochs: 5000
+  early_stopping_target: val_loss
+  early_stopping_patience: 20
+  batch_size: 32
+  shuffling_buffer_prop: 1.0
+
+train_online_scorer:
+  step_id: "time_beta=0.9867"
+  error_averaging: time  # "none", "time" or "features"
+  scores_avg_beta: 0.9867
+...
