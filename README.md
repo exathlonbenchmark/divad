@@ -90,7 +90,7 @@ Where `[all]` includes:
 At the root of the project folder, create a `.env` file containing the lines:
 
 ```txt
-OUTPUTS=path/to/pipeline/outputs-omni
+OUTPUTS=path/to/pipeline/outputs
 SPARK=path/to/extracted/data/raw
 {OTHER_NAME}=path/to/other/data
 ...
