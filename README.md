@@ -8,7 +8,7 @@ Our DIVAD methods and experiments are currently only available here, but will be
 
 Please find:
 
-- The technical report of our VLDB subsmission [here](technical-report.pdf), including details about the methods compared and hyperparameter grids considered.
+- Our technical report [here](technical-report.pdf), including details about the methods compared and hyperparameter grids considered.
 
 - The two main modules for our DIVAD method [here](./exathlon/detection/detectors/divad.py) and [here](./exathlon/detection/detectors/helpers/tf_divad.py).
 
