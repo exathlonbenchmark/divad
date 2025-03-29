@@ -1,7 +1,9 @@
 """Spark-specific data management module.
 """
+
 import os
 import logging
+from itertools import compress
 from typing import Optional, Union, List
 
 import numpy as np
@@ -219,26 +221,25 @@ class SparkManager(BaseManager):
           chronological rank of the sequence in its trace file.
         """
         np.random.seed(self.random_split_seed)
-        seq_dfs = np.array(seq_dfs, dtype=object)
-        seqs_info = np.array(seqs_info, dtype=object)
         set_to_seqs = dict()
         set_to_info = dict()
 
         # undisturbed and disturbed sequence ids
-        undisturbed_mask = np.array([info[1] == "undisturbed" for info in seqs_info])
-        undisturbed_seqs = seq_dfs[undisturbed_mask]
-        undisturbed_info = seqs_info[undisturbed_mask]
-        disturbed_seqs = seq_dfs[~undisturbed_mask]
-        disturbed_info = seqs_info[~undisturbed_mask]
+        undisturbed_mask = [info[1] == "undisturbed" for info in seqs_info]
+        disturbed_mask = [not i for i in undisturbed_mask]
+        undisturbed_seqs = list(compress(seq_dfs, undisturbed_mask))
+        undisturbed_info = list(compress(seqs_info, undisturbed_mask))
+        disturbed_seqs = list(compress(seq_dfs, disturbed_mask))
+        disturbed_info = list(compress(seqs_info, disturbed_mask))
 
         if self.setup == "unsupervised":
             # send all disturbed traces to the test set
-            set_to_seqs[test_set_name] = list(disturbed_seqs)
+            set_to_seqs[test_set_name] = disturbed_seqs
             set_to_info[test_set_name] = [[*info, 0] for info in disturbed_info]
 
             # split undisturbed traces into training and validation based on the strategy
             if self.val_prop == 0:
-                set_to_seqs[train_set_name] = list(undisturbed_seqs)
+                set_to_seqs[train_set_name] = undisturbed_seqs
                 set_to_info[train_set_name] = [[*info, 0] for info in undisturbed_info]
             else:
                 set_to_seqs[train_set_name] = []
@@ -745,9 +746,11 @@ def load_trace(trace_path, usecols=None):
 
     # remove the previous file prefix from streaming metrics for their name to be consistent across traces
     trace_df.columns = [
-        c.replace(f'{"_".join(c.split("_")[1:10])}_', "")
-        if "StreamingMetrics" in c
-        else c
+        (
+            c.replace(f'{"_".join(c.split("_")[1:10])}_', "")
+            if "StreamingMetrics" in c
+            else c
+        )
         for c in trace_df.columns
     ]
 

@@ -1,0 +1,44 @@
+---
+name: omni_anomaly
+make_window_datasets:
+  step_id: "w=20"
+  window_manager:
+    window_size: 20
+    window_step: 1
+    downsampling_size: 1
+    downsampling_step: 1
+    downsampling_func: mean
+    n_periods: -1
+    normal_data_prop:
+      value: 1.0
+      lt__1.0:
+        normal_sampling_seed: 0
+    window_min_ano_coverage: 0.0
+    window_weak_ano_policy: drop
+    class_balancing:
+      value: none  # *choice* "naive_ano" only if multiple ano classes
+      ne__none:
+        class_balancing_seed: 0
+    dropped_anomaly_types: "7"
+
+train_window_model:
+  step_id: omni
+  z_dim: 3
+  dense_dim: 500
+  rnn_num_hidden: 500
+  use_connected_z_p: True
+  use_connected_z_q: True
+  std_epsilon: 1e-4
+  posterior_flow_type: "nf"
+  nf_layers: 20
+  initial_lr: 0.001
+  lr_anneal_epoch_freq: 40
+  lr_anneal_factor: 0.5
+  gradient_clip_norm: 10.0
+  valid_step_freq: 100
+  max_epoch: 20
+  batch_size: 50
+  test_batch_size: 50
+  test_n_z: 1
+  get_score_on_dim: False
+...

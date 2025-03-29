@@ -1,38 +1,38 @@
 [build-system]
-requires = ["setuptools", "setuptools-scm"]
-build-backend = "setuptools.build_meta"
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
 
 [project]
 name = "exathlon"
-version = "1.0.0"
+version = "2.0.0"
 authors = [
     {name = "Vincent Jacob", email = "vincent.jacob@inria.fr"},
 ]
 description = "An integrated pipeline for explainable anomaly detection"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = "<=3.6.15"
 license = {text = "Apache License 2.0"}
 dependencies = [
     "python-dotenv",
     "hydra-core",
     "inputimeout",
-    "numpy==1.26.4",
+    "numpy==1.15.4",
     "scipy",
     "pandas",
     "scikit-learn",
     "xgboost",
     "imbalanced-learn",
-    "tensorflow==2.14.0",
-    "tensorflow-probability==0.22.1",
+    "tensorflow==1.12.0",
+    # "tensorflow-gpu==1.12.0",
+    "tensorflow==1.12.0",
+    "tensorflow_probability==0.5.0",
     # deepod repo (package lacks some methods)
-    "deepod@git+https://github.com/xuhongzuo/DeepOD",  # torch>=1.10.0,<1.13.1
-    "keras-tuner==1.4.7",
-    "torch==1.13.1",
+    "zhusuan@git+https://github.com/thu-ml/zhusuan",
+    "tfsnippet@git+https://github.com/haowen-xu/tfsnippet.git@v0.2.0-alpha1",
     "Markdown==3.3.4",  # tensorboard compatibility
     "importlib-metadata<5.0",  # tensorboard compatibility
     "matplotlib",
     "tqdm",
-    "mlxtend",
     "lime",
     "dill"  # needed to save LIME objects
 ]
@@ -56,8 +56,6 @@ notebooks = [
     "PyQt5",
     "statsmodels",
     "seaborn",
-    "joypy",
-    "umap-learn",
     "datashader",
     "bokeh",
     "holoviews",
@@ -66,7 +64,6 @@ notebooks = [
 ]
 profiling = [
     "memory_profiler",
-    "tensorboard-plugin-profile"
 ]
 all = [
     "exathlon[dev]",

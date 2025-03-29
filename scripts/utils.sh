@@ -865,26 +865,58 @@ function get_train_window_model_id() {
       id_str="${id_str}_${early_stopping_target}_${early_stopping_patience}"
       echo "$id_str"
     fi
-    if [ "$detector" == "mscred" ]; then
-      signature_lengths=$2
-      filters=$3
-      kernel_sizes=$4
-      strides=$5
-      optimizer=$6
-      adamw_weight_decay=$7
-      learning_rate=$8
-      batch_size=$9
-      n_epochs=${10}
-      early_stopping_target=${11}
-      early_stopping_patience=${12}
-      if [ "$adamw_weight_decay" == "0.0" ] || [ "$adamw_weight_decay" == "0" ]; then
-        weight_decay_str=""
+    if [ "$detector" == "omni_anomaly" ]; then
+      z_dim=$2
+      dense_dim=$3
+      rnn_num_hidden=$4
+      use_connected_z_p=$5
+      use_connected_z_q=$6
+      std_epsilon=$7
+      posterior_flow_type=$8
+      nf_layers=$9
+      initial_lr=${10}
+      lr_anneal_epoch_freq=${11}
+      lr_anneal_factor=${12}
+      gradient_clip_norm=${13}
+      valid_step_freq=${14}
+      max_epoch=${15}
+      batch_size=${16}
+      test_batch_size=${17}
+      test_n_z=${18}
+      if [ "$use_connected_z_p" == "False" ]; then
+        use_connected_z_p_str="_zpnc"  # z_p not connected
       else
-        weight_decay_str="_${adamw_weight_decay}"
+        use_connected_z_p_str=""
       fi
-      arch="$(join_by "_" $signature_lengths $filters $kernel_sizes $strides)"  #! no quotes
-      id_str="mscred_${arch}_${optimizer}${weight_decay_str}_${learning_rate}_${batch_size}_${n_epochs}"
-      id_str="${id_str}_${early_stopping_target}_${early_stopping_patience}"
+      if [ "$use_connected_z_q" == "False" ]; then
+        use_connected_z_q_str="_zqnc"  # z_q not connected
+      else
+        use_connected_z_q_str=""
+      fi
+      if [ "$std_epsilon" != "1e-4" ]; then
+        std_epsilon_str="_${std_epsilon}"
+      else
+        std_epsilon_str=""
+      fi
+      if [ "$posterior_flow_type" != "nf" ]; then
+        posterior_flow_type_str="_${posterior_flow_type}"
+      else
+        posterior_flow_type_str=""
+      fi
+      if [ "$test_batch_size" != "$batch_size" ]; then
+        test_batch_size_str="_${test_batch_size}"
+      else
+        test_batch_size_str=""
+      fi
+      if [ "$test_n_z" != "1" ]; then
+        test_n_z_str="_${test_n_z}"
+      else
+        test_n_z_str=""
+      fi
+      id_str="omni${use_connected_z_p_str}${use_connected_z_q_str}${std_epsilon_str}${posterior_flow_type_str}_${z_dim}"
+      id_str="${id_str}_${dense_dim}_${rnn_num_hidden}_${nf_layers}_${initial_lr}_${lr_anneal_epoch_freq}"
+      id_str="${id_str}_${lr_anneal_factor}_${gradient_clip_norm}_${valid_step_freq}_${max_epoch}${test_batch_size_str}"
+      id_str="${id_str}${test_n_z_str}"
       echo "$id_str"
     fi
     if [ "$detector" == "contrastive_autoencoder" ]; then
