@@ -6,7 +6,7 @@ The widespread adoption of digital services, along with the scale and complexity
 
 Please find:
 
-- Our technical report [here](technical-report.pdf), including details about the methods compared and hyperparameter grids considered.
+- Our technical report [here](https://arxiv.org/pdf/2503.23060), including details about the methods compared and hyperparameter grids considered.
 
 - The two main modules for our DIVAD method [here](./exathlon/detection/detectors/divad.py) and [here](./exathlon/detection/detectors/helpers/tf_divad.py).
 
